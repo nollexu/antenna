@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Antenna</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/editor.md/css/editormd.css}" />
+    <link rel="icon" th:href="@{/pic/antenna.png}">
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/sweetalert2.all.min.js}"></script>
+    <script th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+    <style>
+        h4 {
+            font-family: Trebuchet MS;
+            color: rgb(56, 56, 56);
+        }
+
+        .btn-primary {
+            background-color: rgb(255, 255, 255);
+            border-color: rgb(71, 103, 129);
+            color: rgb(71, 103, 129);
+        }
+
+        .btn-primary:hover {
+            background-color: rgb(71, 103, 129);
+            border-color: rgb(71, 103, 129);
+            color: rgb(255, 255, 255);
+        }
+        .btn-secondary {
+            background-color: rgb(66, 144, 135);
+            border-color: rgb(66, 144, 135);
+            color: rgb(255, 255, 255);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgb(64, 132, 123);
+            border-color: rgb(64, 132, 123);
+            color: rgb(255, 255, 255);
+        }
+        li.L1,
+        li.L3,
+        li.L5,
+        li.L7,
+        li.L9 {
+            background: #fff;
+        }
+
+        .editormd-preview-container pre,
+        .editormd-html-preview pre {
+            background-color: #fff;
+        }
+
+        .pun,
+        .opn,
+        .clo {
+            color: rgb(67, 122, 139);
+        }
+
+        .com {
+            color: rgb(167, 167, 167);
+        }
+
+        .markdown-body a {
+            color: #4e6c8a;
+            text-decoration: none;
+        }
+        ul{
+            list-style: none;
+        }
+    </style>
+</head>
+
+<body>
+<div id="layout">
+    <div style="margin:10px auto; width: 90%;">
+        <input id="id" th:value="${article.id()}" style="display: none">
+        <h4 style="display: inline-block;">欢迎使用Antenna-markdown编辑器</h4>
+        <button class="btn btn-primary" style="float: right;" data-toggle="modal" data-target="#myModal">保存</button>
+        <button id="saveAsDraft" class="btn btn-secondary" style="float: right; margin-right:10px">放入草稿箱</button>
+    </div>
+    <div id="test-editormd">
+        <textarea style="display:none;"  th:text="${article.articleContent()}"></textarea>
+    </div>
+</div>
+<!-- 模态框 -->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="model">
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                    <h4 class="modal-title">添加文章</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- 模态框主体 -->
+                <div class="modal-body">
+
+                    <!--文章名-->
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">文章名</span>
+                        </div>
+                        <input type="text" class="form-control" th:value="${article.articleName()}" placeholder="文章名" name="articleName">
+                    </div>
+                    <!--类别-->
+                    <div class="input-group mt-3 mb-3">
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">
+                                类别
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" id="catagory1" value="catagory1" href="#">catagory1</a>
+                                <a class="dropdown-item" id="catagory2" value="catagory2" href="#">catagory2</a>
+                                <a class="dropdown-item" id="catagory3" value="catagory3" href="#">catagory3</a>
+                            </div>
+                        </div>
+                        <input type="text" th:value="${article.catagory()}" name="catagory" class="form-control" placeholder="新增分类">
+                    </div>
+                    <div class="form-group">
+                        <!--维基描述-->
+                        <label for="comment">wiki描述:</label>
+                        <textarea th:text="${article.wikiDescription()}" class="form-control" name="wikiDescription" rows="5" id="comment"></textarea>
+                    </div>
+
+                </div>
+
+                <!-- 模态框底部 -->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary" id="submit" data-dismiss="modal">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:src="@{/editor.md/editormd.min.js}"></script>
+<script type="text/javascript">
+    var testEditor;
+
+    $(function () {
+        testEditor = editormd("test-editormd", {
+            width: "90%",
+            height: 650,
+            syncScrolling: "single",
+            path: "/editor.md/lib/",
+            saveHTMLToTextarea: true,
+            /*开启数据流图支持*/
+            flowChart: true,
+            /*editor area theme*/
+            editorTheme: "solarized",
+            //toolbar: false
+
+        });
+    });
+
+    $("#submit").bind('click', function(){
+        //alert(testEditor.getMarkdown());
+        //alert(testEditor.getHTML());
+        var formData =new FormData(document.getElementById("model"));
+        /*articleContent后台可以用同名参数获取*/
+        formData.append("articleContent",testEditor.getMarkdown());
+        formData.append("id",$('#id').val());
+        console.log($('#id').val());
+        $.ajax({
+            url:"/updateArticle",
+            method:"post",
+            data:formData,
+            processData:false,
+            contentType:false,
+            success:function (data) {
+                Swal({
+                    title: '<strong>Article update successed</strong>',
+                    imageUrl: "/image/thumb-up.svg",
+                    imageWidth: 150,
+                    imageHeight: 150,
+                    width: 300,
+                    height: 300,
+                    showCloseButton: true,
+                    focusConfirm: false,
+                    confirmButtonText: 'ook'
+                });
+            }
+        })
+    });
+
+    $("#saveAsDraft").click(function () {
+        Swal({
+            title: '<strong>保存为草稿成功</strong>',
+            imageUrl: "/image/thumb-up.svg",
+            imageWidth: 150,
+            imageHeight: 150,
+            width: 300,
+            height: 300,
+            showCloseButton: true,
+            focusConfirm: false,
+            confirmButtonText: 'ook'
+        });
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.antenna.blog.mapper.ArticleMapper">   <!--指定mapper位置-->
+
+    <insert id="saveArticle"
+            parameterType="com.antenna.blog.entity.Article">
+		insert into
+		article(article_name,article_content,catagory,wiki_description,create_time)
+		values(#{articleName},#{articleContent},#{catagory},#{wikiDescription},#{createTime})
+	</insert>
+
+    <update id="updateArticle"
+            parameterType="com.antenna.blog.entity.Article">
+		update article set
+		article_name=#{articleName},article_content=#{articleContent},catagory=#{catagory},wiki_description=#{wikiDescription},update_time=#{updateTime} where id=#{id}
+	</update>
+
+	<select id="getArticleByName" resultType="com.antenna.blog.entity.Article">
+        SELECT * FROM article WHERE article_name=#{arg0}
+    </select>
+
+    <select id="listArticles" resultType="com.antenna.blog.entity.Article">
+        SELECT * FROM article;
+    </select>
+
+</mapper>

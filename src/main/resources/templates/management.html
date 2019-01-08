@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      xmlns:v-on="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Antenna</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+    <script th:src="@{/js/Chart.js}"></script>
+    <script th:src="@{/js/vue.js}"></script>
+    <script th:src="@{/js/dropzone/dropzone.js}"></script>
+    <script th:src="@{/js/sweetalert2.all.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/font-awesome/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/dropzone/dropzone.css}">
+    <link rel="stylesheet" th:href="@{//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.13.1/bootstrap-table.min.css}">
+    <link rel="icon" th:href="@{/pic/antenna.png}">
+    <script th:src="@{//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.13.1/bootstrap-table.min.js}"></script>
+    <script th:src="@{//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.13.1/locale/bootstrap-table-zh-CN.min.js}"></script>
+    <style>
+        /* 覆盖bootstrap4的样式 */
+        #add {
+            background-color: rgb(255, 255, 255);
+            border-color: rgb(71, 103, 129);
+            color: rgb(71, 103, 129);
+        }
+
+        #add:hover {
+            background-color: rgb(71, 103, 129);
+            border-color: rgb(71, 103, 129);
+            color: rgb(255, 255, 255);
+        }
+
+        .file-up {
+            color: #456870;
+        }
+
+        .page-link {
+            color: rgb(71, 103, 129);
+        }
+
+        a {
+            color: rgb(71, 103, 129);
+        }
+
+        h5 {
+            color: #5b8088;
+        }
+
+        .fa-download {
+            float: right;
+        }
+
+        .fa-television {
+            float: right;
+        }
+
+        .fixed-table-pagination .pagination-info {
+            font-family: 宋体;
+        }
+
+        .fixed-table-body thead th .th-inner {
+            font-family: 宋体;
+        }
+
+        .page-item.active .page-link {
+            z-index: 1;
+            color: #fff;
+            background-color: #2d8093;
+            border-color: #2d8093;
+        }
+
+        .btn-secondary {
+            color: #000;
+            background-color: #fff;
+            border-color: #fff;
+        }
+
+        .fixed-table-pagination .pagination a {
+            padding: 2px 12px;
+        }
+
+        #delete {
+            background-color: #d7d7d7;
+            border-color: #d7d7d7;
+            color: #000;
+        }
+
+        #edit {
+            background-color: #4eada3;
+            border-color: #4eada3;
+            color: #fff;
+        }
+
+        #view {
+            background-color: #30879b;
+            border-color: #30879b;
+            color: #fff;
+        }
+    </style>
+    <script>
+        Dropzone.autoDiscover = false;
+        jQuery(function ($) {
+            // 初始化Dropzone控件
+            try {
+                var myDropzone = new Dropzone('#mydropzone', {
+                    //设置缩略图的缩放比例
+                    thumbnailHeight: 120,
+                    thumbnailWidth: 120,
+                    //单位 MB
+                    maxFilesize: 2000,
+                    //定义多少文件将被处理,如果超过,事件maxfilesexceeded将被调用。
+                    maxFiles: 5,
+                    dictMaxFilesExceeded: "超出文件上传数量限制!",
+                    dictInvalidFileType: "请注意可上传文件类型!",
+                    dictFileTooBig: "当前上传文件超出可上传大小限制!",
+                    //同时上传多少个文件
+                    parallelUploads: 5,
+                    success: function (data) {
+                        Swal({
+                            title: '<strong>File upload succeeded</strong>',
+                            imageUrl: "/image/thumb-up.svg",
+                            imageWidth: 150,
+                            imageHeight: 150,
+                            width: 300,
+                            height: 300,
+                            showCloseButton: true,
+                            focusConfirm: false,
+                            confirmButtonText: 'ook'
+                        });
+                        vmm.files.push(JSON.parse(data.xhr.response));
+                    }
+                });
+
+            } catch (e) {
+                Swal({
+                    title: '<strong>File upload failed</strong>',
+                    imageUrl: "image/TrailCondition.png",
+                    imageWidth: 200,
+                    imageHeight: 200,
+                    width: 350,
+                    showCloseButton: true,
+                    focusConfirm: false,
+                    confirmButtonText: 'oops',
+                    confirmButtonColor: '#a2a2a0'
+                });
+            }
+        });
+
+
+    </script>
+</head>
+
+<body>
+<!-- 导航栏开始 -->
+<nav class="navbar navbar-expand-md navbar-dark" style="background: rgb(71, 103, 129);">
+    <div class="container">
+        <a class="navbar-brand font-weight-bold" th:href="@{#}">Antenna</a>
+    </div>
+</nav>
+<!-- 导航栏结束 -->
+
+<!-- tab切换开始 -->
+<div class="container">
+    <br>
+    <!-- tab列表开始 -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" th:href="@{#home}">
+                <span class="fa fa-hand-o-up"></span>文件上传</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" th:href="@{#menu1}">
+                <span class="fa fa-list-alt"></span>文章列表</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" th:href="@{#menu2}">
+                <span class="fa fa-line-chart"></span>流量分析</a>
+        </li>
+    </ul>
+    <!-- tab列表结束 -->
+
+    <!-- Tab panes开始 -->
+    <div class="tab-content">
+        <div id="home" class="container tab-pane active">
+            <br>
+            <!-- 文件上传tab开始 -->
+            <form id="mydropzone" class="dropzone" th:action="@{/upload}"></form>
+            <!-- 文件上传tab结束 -->
+            <br>
+            <!-- 服务器文件列表开始 -->
+            <div class="container" id="fileList" style="font-family: 宋体">
+                <h5>文件列表</h5>
+                <ul class="list-group" v-for="file in files" :key="file.id">
+                    <li class="list-group-item" v-bind:class="file.fileIcon" style="color: #585858">
+                        <span> {{file.fileName}}</span>
+                        <a class="fa fa-download" style="margin-left: 5px"
+                           v-bind:href="'http://localhost:8080/pic/'+file.fileName" v-bind:download="file.fileName"></a>
+                        <a class="fa fa-television" v-on:click="see(file.fileName)"></a>
+                    </li>
+                </ul>
+            </div>
+            <!-- 服务器文件列表结束 -->
+        </div>
+        <div id="menu1" class="container tab-pane fade">
+            <!-- 文章列表tab开始 -->
+            <div class="container">
+
+                <div id="toolbar">
+                    <!-- 添加文章按钮 -->
+                    <a class="btn btn-primary" th:href="@{/towrite}" id="add">添加文章
+                    </a>
+                </div>
+                <br>
+                <!-- 文章开始 -->
+                <table id="articleList"></table>
+                <!-- 文章结束 -->
+            </div>
+            <!-- 文章列表tab结束 -->
+        </div>
+        <!-- 统计tab开始 -->
+        <div id="menu2" class="container tab-pane fade">
+            <br>
+            <!--chart-->
+            <div class="container">
+                <div class="row"
+                     style="background-color: #fcfcfc;border-radius: 5px;padding:10px;color: #686a6b;font-family:Consolas">
+                    <div class="col-sm-2">
+                        <p>访问总人数</p>
+                        <p style="font-size: 20px;" th:text="${session.totalNum}">56200</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>本月访问人数</p>
+                        <p style="font-size: 20px;" th:text="${session.totalNumThisMonth}">5200</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>今日访问人数</p>
+                        <p style="font-size: 20px;" th:text="${session.totalNumThisDay}">5200</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>访问最多的时段</p>
+                        <p style="font-size: 20px;" th:text="${session.timeWithMaxVisitor}">5270</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>访问最多的国家</p>
+                        <p style="font-size: 20px;" th:text="${session.countryWithMaxVisitior}">5280</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>访问最多的地区</p>
+                        <p style="font-size: 20px;" th:text="${session.geoWithMaxVisitior}">5000</p>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p style="font-family: 宋体">访问量统计：</p>
+                        <canvas id="myChart" width="800px" height="500px"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <p style="font-family: 宋体">访问时间段占比：</p>
+                        <canvas id="myChart1" width="800px" height="500px"></canvas>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-7">
+                        <p style="font-family: 宋体">视频点击量统计：</p>
+                        <table class="table table-hover table-bordered" style="font-size: 15px;">
+                            <thead>
+                            <tr>
+                                <th>视频名</th>
+                                <th>浮动</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>[大象席地而坐][HD-mkv.720p.国语中字][2018年高分获奖剧情]</td>
+                                <td>+2</td>
+                            </tr>
+                            <tr>
+                                <td>[Mowgli/Jungle Book][BD-mkv.720p.中英双字][2018年剧情冒险]</td>
+                                <td>-3</td>
+                            </tr>
+                            <tr>
+                                <td>[Smallfoot][BD-mkv.720p.中英双字][2018年动画喜剧]</td>
+                                <td>+0</td>
+                            </tr>
+                            <tr>
+                                <td>[ラプラスの魔女][BD-mkv.720p.日语中字][2018年悬疑]</td>
+                                <td>+6</td>
+                            </tr>
+                            <tr>
+                                <td>[Venom][HD-mkv.720p.中英双字][2018年科幻动作]</td>
+                                <td>-3</td>
+                            </tr>
+                            <tr>
+                                <td>[The Christmas Chronicles][BD-mkv.720p.中英双字][2018年喜剧]</td>
+                                <td>+0</td>
+                            </tr>
+                            <tr>
+                                <td>[反贪风暴3/L风暴][BD-mkv.720p.国粤双语中字][2018年动作]</td>
+                                <td>+2</td>
+                            </tr>
+                            <tr>
+                                <td>[The Ballad of Buster Scruggs][BD-mkv.720p.中英双字][2018年西部片]</td>
+                                <td>-3</td>
+                            </tr>
+                            <tr>
+                                <td>[Jonathan][BD-mkv.720p.中英双字][2018年科幻剧情]</td>
+                                <td>+0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-5">
+                        <p style="font-family: 宋体">文章点击量统计：</p>
+                        <table class="table table-hover table-bordered" style="font-size: 15px;">
+                            <thead>
+                            <tr>
+                                <th>文章名</th>
+                                <th>浮动</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Redis的学习</td>
+                                <td>+2</td>
+                            </tr>
+                            <tr>
+                                <td>ドラえもん</td>
+                                <td>-3</td>
+                            </tr>
+                            <tr>
+                                <td>ドラゴンボール</td>
+                                <td>+0</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>+6</td>
+                            </tr>
+                            <tr>
+                                <td>ドラえもん</td>
+                                <td>-3</td>
+                            </tr>
+                            <tr>
+                                <td>ドラゴンボール</td>
+                                <td>+0</td>
+                            </tr>
+                            <tr>
+                                <td>黑執事</td>
+                                <td>+2</td>
+                            </tr>
+                            <tr>
+                                <td>ドラえもん</td>
+                                <td>-3</td>
+                            </tr>
+                            <tr>
+                                <td>ドラゴンボール</td>
+                                <td>+0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 统计tab结束 -->
+</div>
+<br>
+
+<script>
+    window.operateEvents = {
+        "click #delete": function (e, value, row, index) {
+            Swal({
+                title: '你确定要删除吗?',
+                text: "此条纪录删除后不能复原",
+                imageUrl: "image/Info_icon-72a7cf.svg.png",
+                imageWidth: 200,
+                imageHeight: 200,
+                width: 350,
+                confirmButtonColor: '#2a6b7d',
+                cancelButtonColor: '#a2a2a0',
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText: '确定',
+                confirmButtonAriaLabel: 'Thumbs up, great!',
+                cancelButtonText: '取消',
+                cancelButtonAriaLabel: 'Thumbs down'
+            });
+        },
+        "click #view": function (e, value, row, index) {
+            window.open("/showDetail/"+row.articleName);
+        },
+        "click #edit": function (e, value, row, index) {
+            window.open("/toUpdate/"+row.articleName);
+        }
+    };
+
+    function addButton(value, row, index) {
+        return ['<button id="view"  type="button" class="btn btn-success btn-sm">查看</button>&nbsp;',
+            '<button id="edit" type="button" class="btn btn-success btn-sm">修改</button>&nbsp;',
+            '<button id="delete" type="button" class="btn btn-success btn-sm">删除</button>'].join("")
+    }
+
+    $("#articleList").bootstrapTable('destroy');
+    $('#articleList').bootstrapTable({
+        url: '/listArticlesManagement',
+        method: 'get',
+        dataType: "json",
+        search: true,
+        toolbar: "#toolbar",
+        pageSize: "10",
+        showToggle: true,
+        pagination: true, // 是否分页
+        columns: [{
+            field: 'id',
+            title: '序号',
+            align: 'center'
+        }, {
+            field: 'articleName',
+            title: '文章名',
+            align: 'center'
+        }, {
+            field: 'catagory',
+            title: '类型',
+            align: 'center'
+        }, {
+            field: 'createTime',
+            title: '创建时间',
+            align: 'center',
+            width: '125px',
+            formatter: function (value, row, index) {
+                var date = value.toString().split("T");
+                return date[0];
+            }
+        }, {
+            field: 'updateTime',
+            title: '修改时间',
+            align: 'center',
+            width: '125px',
+            formatter: function (value, row, index) {
+                var date = value.toString().split("T");
+                return date[0];
+            }
+        }, {
+            field: 'wikiDescription',
+            title: 'WIKI描述'
+        }, {
+            field: 'operation',
+            title: '操作',
+            align: 'center',
+            formatter: addButton,
+            events: operateEvents,
+        }]
+    });
+</script>
+<script>
+    var vmm = new Vue({
+        el: "#fileList",
+        data: {
+            files: []
+
+        },
+        mounted: function () {
+            this.showData();
+            //需要执行的方法可以在mounted中进行触发，其获取的数据可以赋到data中后，可以放在前面进行渲染
+        },
+        methods: {
+            see: function (fileName) {
+                if (fileName.split(".")[1] == "zip") {
+                    Swal({
+                        title: '<strong>该文件暂不支持预览</strong>',
+                        imageUrl: "image/TrailCondition.png",
+                        imageWidth: 200,
+                        imageHeight: 200,
+                        width: 350,
+                        showCloseButton: true,
+                        focusConfirm: false,
+                        confirmButtonText: '知道了',
+                        confirmButtonColor: '#a2a2a0'
+                    });
+                } else {
+                    /*此处进行在线预览*/
+                    window.open('http://localhost:8080/pic/' + fileName);
+                }
+
+            },
+            showData: function () {
+                $.ajax({
+                    url: "/listFiles",
+                    dataType: "json",
+                    success: function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            vmm.files.push(data[i]);
+                        }
+                        console.log(vmm.files);
+                    }
+                });
+            }
+        }
+    });
+</script>
+<script>
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
+            datasets: [{
+                label: '本周',
+                lineTension: 0,
+                pointStyle: 'cross',
+                backgroundColor: "rgba(71, 159, 161, 0.8)", //背景填充色
+                borderColor: "rgba(71, 159,161, 0.5)", //路径颜色
+                pointColor: "rgba(255,255,255,0.1)", //数据点颜色
+                pointStrokeColor: "#fff", //数据点边框颜色
+                data: [50, 100, 50, 88, 50, 66, 20] //对象数据
+            },
+                {
+                    label: '上周',
+                    lineTension: 0,
+                    pointStyle: 'cross',
+                    backgroundColor: "rgba(61, 148, 118, 0.8)", //背景填充色
+                    borderColor: "rgba(61, 148,118, 0.5)", //路径颜色
+                    pointColor: "rgba(255,255,255,0.1)", //数据点颜色
+                    pointStrokeColor: "#fff", //数据点边框颜色
+                    data: [50, 54, 50, 60, 50, 66, 65] //对象数据
+                }]
+        },
+    });
+    var ctx1 = document.getElementById("myChart1").getContext('2d');
+    var myChart1 = new Chart(ctx1, {
+        type: 'radar',
+        data: {
+            labels: ["0时", "4时", "8时", "12时", "16时", "20时"],
+            datasets: [
+                {
+                    label: '本周',
+                    backgroundColor: "rgba(71, 103, 129, 0.8)", //背景填充色
+                    borderColor: "rgba(71, 103,129, 0.5)", //路径颜色
+                    pointColor: "rgba(190, 35, 0, 0.7)", //数据点颜色
+                    pointStrokeColor: "#fff", //数据点边框颜色
+                    data: [20, 44, 30, 33, 50, 26] //对象数据
+                }, {
+                    label: '上周',
+                    backgroundColor: "rgba(200, 200, 200, 0.8)", //背景填充色
+                    borderColor: "rgba(200, 200,200, 0.5)", //路径颜色
+                    pointColor: "rgba(190, 35, 0, 0.7)", //数据点颜色
+                    pointStrokeColor: "#fff", //数据点边框颜色
+                    data: [20, 30, 30, 44, 21, 19] //对象数据
+                }]
+        },
+    });
+</script>
+</div>
+</body>
+
+</html>

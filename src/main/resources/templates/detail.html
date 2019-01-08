@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Antenna</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/editor.md/css/editormd.css}">
+    <link rel="icon" th:href="@{/pic/antenna.png}">
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/font-awesome/css/font-awesome.min.css}">
+    <script th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+    <style>
+        .editormd-html-preview {
+            width: 75%; /*修改文章宽度*/
+            margin: 0 18% ; /*进行居中*/
+            border-left: solid 1px #afafaf;
+            padding-left:100px;
+        }
+        .editormd-html-preview code{
+            font-family: "Fira Mono", Consolas, Menlo, Monaco, "Courier New", Courier, monospace;
+            font-size: 1em;
+        }
+        .markdown-body{
+            font-family: "Roboto", Corbel, Avenir, "Lucida Grande", "Lucida Sans", sans-serif;
+            font-size: 1.2em;
+        }
+        #sidebar {
+            /*float: left;*/ /*目录变为侧边栏*/
+            line-height: 30px;
+            width: 18%;
+        }
+        #custom-toc-container {
+            margin-top: 10px;
+            position: fixed;
+            max-width: 20%;
+
+        }
+        .markdown-body pre,li.L1, li.L3, li.L5, li.L7, li.L9 {
+            background: #f8f8f8;
+        }
+        .toc-level-2 {
+            color: #7b7b7b;/*各级目录颜色*/
+        }
+
+        .toc-level-3 {
+            color: #7b7b7b;/*各级目录颜色*/
+        }
+
+        .toc-level-4 {
+            color: #7b7b7b; /*各级目录颜色*/
+        }
+
+        .toc-level-5 {
+            color: #7b7b7b; /*各级目录颜色*/
+        }
+
+        li {
+            list-style: none; /*去掉目录的标志*/
+        }
+
+        ul {
+            margin-inline-start: -20px; /*调整各级目录的缩进*/
+        }
+        .pun, .opn, .clo {
+            color: #2c798c;
+        }
+        .com {
+            color: #BA2121;
+        }
+        .pln,.str,.kwd{
+            color: #0C4B33;
+        }
+    </style>
+</head>
+<body>
+<!-- 导航栏开始 -->
+<nav class="navbar navbar-expand-md navbar-dark" style="background: rgb(71, 103, 129);">
+        <a class="navbar-brand font-weight-bold fa fa-star-half-full" th:href="@{/}" >Antenna</a>
+</nav>
+<!--导航栏结束-->
+<div id="sidebar">
+    <div id="custom-toc-container">#custom-toc-container</div>
+</div>
+<div id="test-editormd-view2">
+    <textarea id="append-test" style="display:none;" th:text="${article.articleContent()}"></textarea>
+</div>
+<script th:src="@{/editor.md/lib/marked.min.js}"></script>
+<script th:src="@{/editor.md/lib/prettify.min.js}"></script>
+
+<script th:src="@{/editor.md/lib/raphael.min.js}"></script>
+<script th:src="@{/editor.md/lib/underscore.min.js}"></script>
+<script th:src="@{/editor.md/lib/sequence-diagram.min.js}"></script>
+<script th:src="@{/editor.md/lib/flowchart.min.js}"></script>
+<script th:src="@{/editor.md/lib/jquery.flowchart.min.js}"></script>
+<script th:src="@{/editor.md/editormd.min.js}"></script>
+<script type="text/javascript">
+    $(function () {
+        var testEditormdView2;
+        testEditormdView2 = editormd.markdownToHTML("test-editormd-view2", {
+            htmlDecode: "style,script,iframe",  // you can filter tags decode
+            emoji: true,
+            taskList: true,
+            tocContainer: "#custom-toc-container", // 自定义 ToC 容器层
+            tex: true,  // 默认不解析
+            flowChart: true,  // 默认不解析
+            sequenceDiagram: true,  // 默认不解析
+        });
+    });
+</script>
+</body>
+</html>

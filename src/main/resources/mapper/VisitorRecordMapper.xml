@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.antenna.blog.mapper.VisitorRecordMapper">   <!--指定mapper位置-->
+
+    <insert id="saveVisitorRecord"
+            parameterType="com.antenna.blog.entity.VisitorRecord">
+		insert into
+		visitor_record(host,longitude,latitude,geographical_position,visit_date,visit_time)
+		values(#{host},#{longitude},#{latitude},#{geographicalPosition},#{visitDate},#{visitTime})
+	</insert>
+	
+	<select id="getGeoWithMaxVisitor" resultType="java.lang.String">
+		select geographical_position  from visitor_record group by geographical_position limit 1
+	</select>
+
+    <select id="getTotalVisitorNum" resultType="java.lang.Integer">
+		select count(*) from visitor_record
+	</select>
+    
+    <select id="getTotalVisitorNumThisMonth" resultType="java.lang.Integer">
+        select count(*) from visitor_record where month(visit_date) = month(curdate()) and year(visit_date) = year(curdate())
+    </select>
+
+    <select id="getTotalVisitorNumThisDay" resultType="java.lang.Integer">
+        select count(*) from visitor_record where visit_date= curdate()
+    </select>
+
+    <select id="getTimeWithMaxVisitor" resultType="java.lang.Integer">
+        select hour(visit_time) from visitor_record group by hour(visit_time) limit 1
+    </select>
+</mapper>

@@ -1,0 +1,17 @@
+
+.flex-custom{
+    justify-content: flex-end;
+}
+.carousel-inner img{
+    width: 100%;
+    height: 100%;
+}
+.container h4{
+    font-family: Consolas;
+}
+.container h2{
+    font-family: Consolas;
+}
+.article{
+    margin-top: 2em;
+}
